@@ -82,12 +82,15 @@ namespace ClientDesktop.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnChbIsFilterEnable_Unchecked(object sender, RoutedEventArgs e)
+        private async void OnChbIsFilterEnable_Unchecked(object sender, RoutedEventArgs e)
         {
             DatePicker dpStartDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpStartDate");
             DatePicker dpEndDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpEndDate");
             dpStartDate.IsEnabled = false;
             dpEndDate.IsEnabled = false;
+            TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
+            List<Message> messageList = await DAL.GetMessagesAsync(Config.UId);            
+            tbxChat.Text = string.Join(Environment.NewLine, messageList);    
         }
 
         /// <summary>
@@ -97,17 +100,9 @@ namespace ClientDesktop.View
         /// <param name="e"></param>
         private async void OnDpEndDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
         {
-
             DatePicker dpStartDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpStartDate");
             DatePicker dpEndDate = (DatePicker)(sender);
-            DateTime startDate = dpStartDate.DisplayDate;
-            DateTime endDate = dpEndDate.DisplayDate;
-
-            if (dpEndDate.SelectedDate != null && dpStartDate.SelectedDate != null)
-            {
-                List<Message> messageList = await DAL.GetMessagesAsync(Config.UId);
-                messageList = messageList.Where(x => x.Datetime >= startDate && x.Datetime >= endDate).ToList();
-            }
+            filterMessages(dpStartDate, dpEndDate);
         }
 
         /// <summary>
@@ -117,15 +112,23 @@ namespace ClientDesktop.View
         /// <param name="e"></param>
         private async void OnDpStartDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
         {
+            
             DatePicker dpStartDate = (DatePicker)(sender);
             DatePicker dpEndDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpEndDate");
-            DateTime startDate = dpStartDate.DisplayDate;
-            DateTime endDate = dpEndDate.DisplayDate;
+            filterMessages(dpStartDate, dpEndDate);
+        }
 
-            if (dpEndDate.SelectedDate != null && dpStartDate.SelectedDate != null)
+        private async void filterMessages(DatePicker dpStartDate, DatePicker dpEndDate)
+        {
+            TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
+            DateTime? startDate = dpStartDate.SelectedDate;
+            DateTime? endDate = dpEndDate.SelectedDate;
+
+            if (dpStartDate.SelectedDate != null && dpEndDate.SelectedDate != null)
             {
                 List<Message> messageList = await DAL.GetMessagesAsync(Config.UId);
-                messageList = messageList.Where(x => x.Datetime >= startDate && x.Datetime >= endDate).ToList();
+                messageList = messageList.Where(x => x.Datetime >= startDate && x.Datetime <= endDate).ToList();
+                tbxChat.Text = string.Join(Environment.NewLine, messageList);
             }
         }
 
