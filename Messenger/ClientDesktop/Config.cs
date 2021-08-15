@@ -1,13 +1,22 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ClientDesktop
 {
-    public static class Config
+    public class Config
     {
+        public Config()
+        {
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+            var config = new ConfigurationBuilder().SetBasePath(basePath)
+            .AddJsonFile("Config.json").Build();
+            UId = Int32.Parse(basePath + config.GetSection("UId").Value);
+            UserName = basePath + config.GetSection("UserName").Value;
+        }
+
         /// <summary>
         /// URL-адрес API (в формате https://localhost:5001)
         /// </summary>
