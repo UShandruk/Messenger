@@ -16,6 +16,7 @@ namespace API.Controllers
     public class MessageController : ControllerBase
     {
         private readonly ILogger<MessageController> _logger;
+        private ConfigReader configReader = new ConfigReader();
 
         public MessageController(ILogger<MessageController> logger)
         {
@@ -32,7 +33,7 @@ namespace API.Controllers
         /// </summary>
         private void saveToJSON(int uId)
         {
-            string strMessageFilePath = Config.FilePathMessages + uId.ToString() + "_messages.json";
+            string strMessageFilePath = configReader.FilePathMessages + uId.ToString() + "_messages.json";
             List<Message> lstMessageOld = loadFromJSON(uId);
             List<Message> lstMessageToSave = lstMessageOld.Concat(messageList).ToList();
             string jsonString = JsonSerializer.Serialize(lstMessageToSave);
@@ -46,7 +47,7 @@ namespace API.Controllers
         /// <returns></returns>
         private List<Message> loadFromJSON(int uId)
         {
-            string strMessageFilePath = Config.FilePathMessages + uId.ToString() + "_messages.json";
+            string strMessageFilePath = configReader.FilePathMessages + uId.ToString() + "_messages.json";
             var jsonBytes = System.IO.File.ReadAllBytes(strMessageFilePath);
             var obj = JsonSerializer.Deserialize(jsonBytes, typeof(List<Message>));
             List<Message> list = (List<Message>)obj;
