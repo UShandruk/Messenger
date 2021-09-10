@@ -21,6 +21,9 @@ namespace ClientDesktop.View
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ConfigReader configReader = new ConfigReader();
+        private DAL dal = new DAL();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -36,9 +39,9 @@ namespace ClientDesktop.View
             TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
             TextBox tbxMessage = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxMessage");
             string text = tbxMessage.Text;
-            Message message = new Message(Config.UId, Config.UserName, text);
-            DAL.SendMessageAsync(message);
-            DAL.GetMessagesAsync(Config.UId);
+            Message message = new Message(configReader.UId, configReader.UserName, text);
+            dal.SendMessageAsync(message);
+            dal.GetMessagesAsync(configReader.UId);
             tbxChat.Text = tbxChat.Text + tbxMessage.Text;
             tbxMessage.Text = "";
             ((Button)sender).IsEnabled = false;
@@ -65,35 +68,6 @@ namespace ClientDesktop.View
         }
 
         /// <summary>
-        /// Если чекбокс фмльтрации сообщений по дате доступен, то и поля выыбора дат доступны
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnChbIsFilterEnable_Checked(object sender, RoutedEventArgs e)
-        {
-            DatePicker dpStartDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpStartDate");
-            DatePicker dpEndDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpEndDate");
-            dpStartDate.IsEnabled = true;
-            dpEndDate.IsEnabled = true;
-        }
-
-        /// <summary>
-        /// Если чекбокс фильтрации сообщений по дате недоступен, то и поля выбора дат недоступны
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void OnChbIsFilterEnable_Unchecked(object sender, RoutedEventArgs e)
-        {
-            DatePicker dpStartDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpStartDate");
-            DatePicker dpEndDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpEndDate");
-            dpStartDate.IsEnabled = false;
-            dpEndDate.IsEnabled = false;
-            TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
-            List<Message> messageList = await DAL.GetMessagesAsync(Config.UId);            
-            tbxChat.Text = string.Join(Environment.NewLine, messageList);    
-        }
-
-        /// <summary>
         /// Изменение значения конечной даты
         /// </summary>
         /// <param name="sender"></param>
@@ -108,46 +82,53 @@ namespace ClientDesktop.View
         /// <summary>
         /// Изменение значения начальной даты
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private async void OnDpStartDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            
             DatePicker dpStartDate = (DatePicker)(sender);
             DatePicker dpEndDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpEndDate");
             filterMessages(dpStartDate, dpEndDate);
         }
 
+        /// <summary>
+        /// Фильтрация сообщений, если отмечен чекбокс фильтрации и заполнены обе даты
+        /// </summary>
         private async void filterMessages(DatePicker dpStartDate, DatePicker dpEndDate)
         {
             TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
             DateTime? startDate = dpStartDate.SelectedDate;
             DateTime? endDate = dpEndDate.SelectedDate;
+            CheckBox chbIsFilterApplied = ((Grid)this.Content).Children.OfType<CheckBox>().Single(Child => Child.Uid == "chbIsFilterApplied");
 
-            if (dpStartDate.SelectedDate != null && dpEndDate.SelectedDate != null)
+            if (chbIsFilterApplied.IsChecked == true && dpStartDate.SelectedDate != null && dpEndDate.SelectedDate != null)
             {
-                List<Message> messageList = await DAL.GetMessagesAsync(Config.UId);
+                List<Message> messageList = await dal.GetMessagesAsync(configReader.UId);
                 messageList = messageList.Where(x => x.Datetime >= startDate && x.Datetime <= endDate).ToList();
                 tbxChat.Text = string.Join(Environment.NewLine, messageList);
             }
         }
 
         /// <summary>
-        /// Чекбокс фильтрации сообщений доступен только при их наличии
+        /// Чекбокс фильтрации сообщений и поля выбора дат доступны только при наличии сообщений
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnTbxChat_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CheckBox chbIsFilterEnable = ((Grid)this.Content).Children.OfType<CheckBox>().Single(Child => Child.Uid == "chbIsFilterEnable");
+            CheckBox chbIsFilterApplied = ((Grid)this.Content).Children.OfType<CheckBox>().Single(Child => Child.Uid == "chbIsFilterApplied");
+            DatePicker dpStartDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpStartDate");
+            DatePicker dpEndDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpEndDate");
 
             if (((TextBox)sender).Text.Length > 0)
             {  
-                chbIsFilterEnable.IsEnabled = true;
+                chbIsFilterApplied.IsEnabled = true;
+                dpStartDate.IsEnabled = true;
+                dpEndDate.IsEnabled = true;
             }
             else
             {
-                chbIsFilterEnable.IsEnabled = false;
+                chbIsFilterApplied.IsEnabled = false;
+                dpStartDate.IsEnabled = false;
+                dpEndDate.IsEnabled = false;
             }
         }
 
@@ -160,7 +141,7 @@ namespace ClientDesktop.View
         {
             try
             {
-                List<Message> messageList = DAL.GetMessagesAsync(Config.UId).Result;
+                List<Message> messageList = dal.GetMessagesAsync(configReader.UId).Result;
                 String textString = string.Join(Environment.NewLine, messageList);
 
                 TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
