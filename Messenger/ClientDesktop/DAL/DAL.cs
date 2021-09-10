@@ -15,24 +15,35 @@ namespace ClientDesktop
 {
     public class DAL
     {
+<<<<<<< HEAD
+        private static HttpClientHandler handler;
+        private static HttpClient GethttpClient()
+=======
         /// <summary>
         /// Получить Http-клиент с отключенной проверкой ssl-сертификата
         /// </summary>
         /// <returns></returns>
         private static HttpClient _getHttpClient()
+>>>>>>> 49f56984634bf99be74a9902a1eb8c7c15568d5a
         {
-            HttpClientHandler handler = new HttpClientHandler();
+            handler = new HttpClientHandler();
+            HttpClient httpClient = new HttpClient(handler);
             handler.ClientCertificateOptions = ClientCertificateOption.Manual;
             handler.ServerCertificateCustomValidationCallback =
                 (httpRequestMessage, cert, cetChain, policyErrors) =>
                 {
                     return true;
                 };
+            return httpClient;
+        }
 
+<<<<<<< HEAD
+=======
             HttpClient httpClient = new HttpClient(handler);
             return httpClient;
         }
 
+>>>>>>> 49f56984634bf99be74a9902a1eb8c7c15568d5a
         /// <summary>
         /// Отправить сообщение
         /// </summary>
@@ -40,8 +51,13 @@ namespace ClientDesktop
         /// <returns></returns>
         public static async void SendMessageAsync(Message message)
         {
+<<<<<<< HEAD
+            HttpClient httpClient = GethttpClient();
+               HttpResponseMessage response = await httpClient.PostAsJsonAsync(Config.ApiUrl + "/Message/SendMessage", message);
+=======
             HttpClient httpClient = _getHttpClient();
             HttpResponseMessage response = await httpClient.PostAsJsonAsync(Config.ApiUrl + "/Message/SendMessage", message);
+>>>>>>> 49f56984634bf99be74a9902a1eb8c7c15568d5a
             response.EnsureSuccessStatusCode();
         }
 
@@ -52,11 +68,14 @@ namespace ClientDesktop
         /// <returns></returns>
         public static async Task<List<Message>> GetMessagesAsync(int uId)
         {
+<<<<<<< HEAD
+=======
             HttpClient httpClient = _getHttpClient();
 
+>>>>>>> 49f56984634bf99be74a9902a1eb8c7c15568d5a
             //string url = "https://localhost:5001/Message/GetMessages?uId=1";
             string url = Config.ApiUrl + "/Message/GetMessages?uId=" + uId;
-            httpClient.Timeout = new TimeSpan(0, 0, 30);
+            HttpClient httpClient = GethttpClient();
 
             HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
             string jsonString = response.Content.ReadAsStringAsync().Result;
