@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Messenger 1.0" Height="500" Width="300">
     <Grid Uid="grdMain">
-        <CheckBox Uid="chbIsFilterEnable" Checked="OnChbIsFilterEnable_Checked" IsEnabled="False" Unchecked="OnChbIsFilterEnable_Unchecked" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
+        <CheckBox Uid="chbIsFilterApplied" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
         <DatePicker Uid="dpStartDate" SelectedDateChanged="OnDpStartDate_SelectDateChanged" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30,10,0,0"></DatePicker>
         <DatePicker Uid="dpEndDate" SelectedDateChanged="OnDpEndDate_SelectDateChanged" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="140,10,0,0"></DatePicker>
         <TextBox Uid="tbxChat" TextChanged="OnTbxChat_TextChanged" Loaded="OnTbxChat_Loaded" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,45,0,0" Text="" TextWrapping="Wrap" Width="280" Height="300"/>
