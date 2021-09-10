@@ -15,6 +15,20 @@ namespace ClientDesktop
 {
     public class DAL
     {
+        private static HttpClientHandler handler;
+        private static HttpClient GethttpClient()
+        {
+            handler = new HttpClientHandler();
+            HttpClient httpClient = new HttpClient(handler);
+            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+            handler.ServerCertificateCustomValidationCallback =
+                (httpRequestMessage, cert, cetChain, policyErrors) =>
+                {
+                    return true;
+                };
+            return httpClient;
+        }
+
         /// <summary>
         /// Отправить сообщение
         /// </summary>
@@ -22,16 +36,8 @@ namespace ClientDesktop
         /// <returns></returns>
         public static async void SendMessageAsync(Message message)
         {
-            HttpClientHandler handler = new HttpClientHandler();
-            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-            handler.ServerCertificateCustomValidationCallback =
-                (httpRequestMessage, cert, cetChain, policyErrors) =>
-                {
-                    return true;
-                };
-
-            HttpClient httpClient = new HttpClient(handler);
-            HttpResponseMessage response = await httpClient.PostAsJsonAsync(Config.ApiUrl + "/Message/SendMessage", message);
+            HttpClient httpClient = GethttpClient();
+               HttpResponseMessage response = await httpClient.PostAsJsonAsync(Config.ApiUrl + "/Message/SendMessage", message);
             response.EnsureSuccessStatusCode();
         }
 
@@ -42,19 +48,9 @@ namespace ClientDesktop
         /// <returns></returns>
         public static async Task<List<Message>> GetMessagesAsync(int uId)
         {
-            HttpClientHandler handler = new HttpClientHandler();
-            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-            handler.ServerCertificateCustomValidationCallback =
-                (httpRequestMessage, cert, cetChain, policyErrors) =>
-                {
-                    return true;
-                };
-
-            HttpClient httpClient = new HttpClient(handler);
-
             //string url = "https://localhost:5001/Message/GetMessages?uId=1";
             string url = Config.ApiUrl + "/Message/GetMessages?uId=" + uId;
-            httpClient.Timeout = new TimeSpan(0, 0, 30);
+            HttpClient httpClient = GethttpClient();
 
             HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
             string jsonString = response.Content.ReadAsStringAsync().Result;
