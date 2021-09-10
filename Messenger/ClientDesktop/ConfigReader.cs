@@ -22,9 +22,9 @@ namespace ClientDesktop
         public int UId;
 
         /// <summary>
-        /// Имя пользователя (берется системное)
+        /// Имя пользователя
         /// </summary>
-        public string UserName = Environment.UserName;
+        public string UserName;
 
         /// <summary>
         /// Конструктор
