@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,23 +31,20 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-
-            // Маршрутизация
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapControllers(); // https://localhost:44347/Message/ - ок, https://localhost:44347/Message/GetMessages - 404
-
-                //endpoints.MapDefaultControllerRoute();
-
-                endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller}/{action}/{id?}");
+                endpoints.MapControllers();
             });
         }
     }
