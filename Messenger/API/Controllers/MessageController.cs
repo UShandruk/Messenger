@@ -48,9 +48,14 @@ namespace API.Controllers
         private List<Message> loadFromJSON(int uId)
         {
             string strMessageFilePath = configReader.FilePathMessages + uId.ToString() + "_messages.json";
-            var jsonBytes = System.IO.File.ReadAllBytes(strMessageFilePath);
-            var obj = JsonSerializer.Deserialize(jsonBytes, typeof(List<Message>));
-            List<Message> list = (List<Message>)obj;
+            List<Message> list = new List<Message>();
+            // Десериализация выполняется только если файл существует
+            if (System.IO.File.Exists(strMessageFilePath))
+            {
+                var jsonBytes = System.IO.File.ReadAllBytes(strMessageFilePath);
+                var obj = JsonSerializer.Deserialize(jsonBytes, typeof(List<Message>));
+                list = (List<Message>)obj;
+            }
             return list;
         }
 
