@@ -70,13 +70,16 @@ namespace ClientDesktop.View
         /// <summary>
         /// Отправить сообщение
         /// </summary>
-        private void OnBtnSendMessage_Click(Object sender, RoutedEventArgs e)
+        private async void OnBtnSendMessage_Click(Object sender, RoutedEventArgs e)
         {
             string text = tbxMessage.Text;
             Message message = new Message(configReader.UId, configReader.UserName, text);
             dal.SendMessageAsync(message);
-            dal.GetMessagesAsync(configReader.UId);
-            tbxChat.Text = tbxChat.Text + tbxMessage.Text;
+
+            List<Message> messageList = await dal.GetMessagesAsync(configReader.UId);
+            messageList.Add(message);
+            tbxChat.Text = string.Join(Environment.NewLine, messageList);
+
             tbxMessage.Text = "";
             ((Button)sender).IsEnabled = false;
         }
@@ -96,7 +99,7 @@ namespace ClientDesktop.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void OnDpEndDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
+        private void OnDpEndDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
         {
             filterMessages(dpStartDate, dpEndDate);
         }
@@ -104,7 +107,7 @@ namespace ClientDesktop.View
         /// <summary>
         /// Изменение значения начальной даты
         /// </summary>
-        private async void OnDpStartDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
+        private void OnDpStartDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
         {
             filterMessages(dpStartDate, dpEndDate);
         }
@@ -120,8 +123,8 @@ namespace ClientDesktop.View
             List<Message> messageList = await dal.GetMessagesAsync(configReader.UId);
 
             if (chbxIsFilterApplied.IsChecked == true && dpStartDate.SelectedDate != null && dpEndDate.SelectedDate != null)
-            {                
-                messageList = messageList.Where(x => x.Datetime.Date >= startDate && x.Datetime.Date <= endDate).ToList();                
+            {
+                messageList = messageList.Where(x => x.Datetime.Date >= startDate && x.Datetime.Date <= endDate).ToList();
             }
             tbxChat.Text = string.Join(Environment.NewLine, messageList);
         }
