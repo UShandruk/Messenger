@@ -60,10 +60,16 @@ namespace ClientDesktop.View
         }
 
         /// <summary>
+        /// Клик на чекбокс фильтрации
+        /// </summary>
+        private void OnChbxIsFilterApplied_Click(Object sender, RoutedEventArgs e)
+        {
+            filterMessages(dpStartDate, dpEndDate);
+        }
+
+        /// <summary>
         /// Отправить сообщение
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void OnBtnSendMessage_Click(Object sender, RoutedEventArgs e)
         {
             string text = tbxMessage.Text;
@@ -111,12 +117,13 @@ namespace ClientDesktop.View
             DateTime? startDate = dpStartDate.SelectedDate;
             DateTime? endDate = dpEndDate.SelectedDate;
 
+            List<Message> messageList = await dal.GetMessagesAsync(configReader.UId);
+
             if (chbxIsFilterApplied.IsChecked == true && dpStartDate.SelectedDate != null && dpEndDate.SelectedDate != null)
-            {
-                List<Message> messageList = await dal.GetMessagesAsync(configReader.UId);
-                messageList = messageList.Where(x => x.Datetime.Date >= startDate && x.Datetime.Date <= endDate).ToList();
-                tbxChat.Text = string.Join(Environment.NewLine, messageList);
+            {                
+                messageList = messageList.Where(x => x.Datetime.Date >= startDate && x.Datetime.Date <= endDate).ToList();                
             }
+            tbxChat.Text = string.Join(Environment.NewLine, messageList);
         }
         
         /// <summary>
