@@ -67,14 +67,13 @@ namespace ClientDesktop
             HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
             string jsonString = response.Content.ReadAsStringAsync().Result;
 
-            JsonSerializerOptions options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
             List<Message> messageList = new List<Message>();
-            if (jsonString.Length > 0)
+            if (jsonString.Length > 2) // jsonString без сообщений равна "[]"
             {
+                JsonSerializerOptions options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
                 messageList = JsonSerializer.Deserialize<List<Message>>(jsonString, options);
             }
 
