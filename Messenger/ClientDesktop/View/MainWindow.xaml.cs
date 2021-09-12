@@ -27,6 +27,34 @@ namespace ClientDesktop.View
         public MainWindow()
         {
             InitializeComponent();
+
+            setBindingDatePickers();
+            setBindingChbxIsFilterApplied();
+        }
+
+        /// <summary>
+        /// Биндинг: поля выбора дат доступны только при отмеченном чекбоксе фильтрации //chbxIsFilterApplied.IsChecked
+        /// </summary>
+        private void setBindingDatePickers()
+        {
+            Binding binding = new Binding();
+            binding.ElementName = "chbxIsFilterApplied"; // элемент-источник
+            binding.Path = new PropertyPath("IsChecked"); // свойство элемента-источника
+            binding.Mode = BindingMode.OneWay; // установка режима связи (не обязательно)
+            dpStartDate.SetBinding(DatePicker.IsEnabledProperty, binding); // установка привязки для элемента-приемника 1
+            dpEndDate.SetBinding(DatePicker.IsEnabledProperty, binding); // установка привязки для элемента-приемника 2
+        }
+
+        /// <summary>
+        /// Биндинг: чекбокс фильтрации доступен только при наличии сообщений в поле чата
+        /// </summary>
+        private void setBindingChbxIsFilterApplied()
+        {
+            Binding binding = new Binding();
+            binding.ElementName = "tbxChat"; // элемент-источник
+            binding.Path = new PropertyPath("TextProperty"); // свойство элемента-источника
+            binding.Mode = BindingMode.OneWay; // установка режима связи (не обязательно)
+            chbxIsFilterApplied.SetBinding(CheckBox.IsEnabledProperty, binding); // установка привязки для элемента-приемника
         }
 
         /// <summary>
@@ -36,8 +64,6 @@ namespace ClientDesktop.View
         /// <param name="e"></param>
         private void OnBtnSendMessage_Click(Object sender, RoutedEventArgs e)
         {
-            TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
-            TextBox tbxMessage = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxMessage");
             string text = tbxMessage.Text;
             Message message = new Message(configReader.UId, configReader.UserName, text);
             dal.SendMessageAsync(message);
@@ -48,23 +74,14 @@ namespace ClientDesktop.View
         }
 
         /// <summary>
-        /// Изменился текст внутри поля набора нового сообшения
+        /// Кнопка "Отправить" доступна только при наличии текста сообщения
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnTbxMessage_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // Проверка на наличие текста для управления доступностью кнопки "Отправить"
-            Button btnSendMessage = ((Grid)this.Content).Children.OfType<Button>().Single(Child => Child.Uid == "btnSendMessage");
+            btnSendMessage.IsEnabled = ((TextBox)sender).Text.Length > 0;
 
-            if (((TextBox)sender).Text.Length > 0)
-            {
-                btnSendMessage.IsEnabled = true;
-            }
-            else
-            {
-                btnSendMessage.IsEnabled = false;
-            }
         }
 
         /// <summary>
@@ -74,8 +91,6 @@ namespace ClientDesktop.View
         /// <param name="e"></param>
         private async void OnDpEndDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            DatePicker dpStartDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpStartDate");
-            DatePicker dpEndDate = (DatePicker)(sender);
             filterMessages(dpStartDate, dpEndDate);
         }
 
@@ -84,8 +99,6 @@ namespace ClientDesktop.View
         /// </summary>
         private async void OnDpStartDate_SelectDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            DatePicker dpStartDate = (DatePicker)(sender);
-            DatePicker dpEndDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpEndDate");
             filterMessages(dpStartDate, dpEndDate);
         }
 
@@ -94,44 +107,17 @@ namespace ClientDesktop.View
         /// </summary>
         private async void filterMessages(DatePicker dpStartDate, DatePicker dpEndDate)
         {
-            TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
             DateTime? startDate = dpStartDate.SelectedDate;
             DateTime? endDate = dpEndDate.SelectedDate;
-            CheckBox chbIsFilterApplied = ((Grid)this.Content).Children.OfType<CheckBox>().Single(Child => Child.Uid == "chbIsFilterApplied");
 
-            if (chbIsFilterApplied.IsChecked == true && dpStartDate.SelectedDate != null && dpEndDate.SelectedDate != null)
+            if (chbxIsFilterApplied.IsChecked == true && dpStartDate.SelectedDate != null && dpEndDate.SelectedDate != null)
             {
                 List<Message> messageList = await dal.GetMessagesAsync(configReader.UId);
                 messageList = messageList.Where(x => x.Datetime >= startDate && x.Datetime <= endDate).ToList();
                 tbxChat.Text = string.Join(Environment.NewLine, messageList);
             }
         }
-
-        /// <summary>
-        /// Чекбокс фильтрации сообщений и поля выбора дат доступны только при наличии сообщений
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnTbxChat_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            CheckBox chbIsFilterApplied = ((Grid)this.Content).Children.OfType<CheckBox>().Single(Child => Child.Uid == "chbIsFilterApplied");
-            DatePicker dpStartDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpStartDate");
-            DatePicker dpEndDate = ((Grid)this.Content).Children.OfType<DatePicker>().Single(Child => Child.Uid == "dpEndDate");
-
-            if (((TextBox)sender).Text.Length > 0)
-            {  
-                chbIsFilterApplied.IsEnabled = true;
-                dpStartDate.IsEnabled = true;
-                dpEndDate.IsEnabled = true;
-            }
-            else
-            {
-                chbIsFilterApplied.IsEnabled = false;
-                dpStartDate.IsEnabled = false;
-                dpEndDate.IsEnabled = false;
-            }
-        }
-
+        
         /// <summary>
         /// Окно с перепиской загружено
         /// </summary>
@@ -143,14 +129,10 @@ namespace ClientDesktop.View
             {
                 List<Message> messageList = dal.GetMessagesAsync(configReader.UId).Result;
                 String textString = string.Join(Environment.NewLine, messageList);
-
-                TextBox tbxChat = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxChat");
                 tbxChat.Text = textString;
-
             }
             catch (Exception ex)
             {
-                TextBox tbxMessage = ((Grid)this.Content).Children.OfType<TextBox>().Single(Child => Child.Uid == "tbxMessage");
                 tbxMessage.Text = ex.Message;
             }
         }

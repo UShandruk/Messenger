@@ -7,11 +7,15 @@
         mc:Ignorable="d"
         Title="Messenger 1.0" Height="500" Width="300">
     <Grid Uid="grdMain">
-        <CheckBox Uid="chbIsFilterApplied" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
-        <DatePicker Uid="dpStartDate" SelectedDateChanged="OnDpStartDate_SelectDateChanged" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30,10,0,0"></DatePicker>
-        <DatePicker Uid="dpEndDate" SelectedDateChanged="OnDpEndDate_SelectDateChanged" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="140,10,0,0"></DatePicker>
-        <TextBox Uid="tbxChat" TextChanged="OnTbxChat_TextChanged" Loaded="OnTbxChat_Loaded" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,45,0,0" Text="" TextWrapping="Wrap" Width="280" Height="300"/>
-        <TextBox Uid="tbxMessage" TextChanged="OnTbxMessage_TextChanged" HorizontalAlignment="Center" VerticalAlignment="Top" Text="" TextWrapping="Wrap" Margin="0,340,0,0" Width="280" Height="90"/>
-        <Button Uid="btnSendMessage" Click="OnBtnSendMessage_Click" IsEnabled="False" Content="Отправить" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" />
+        <CheckBox Uid="chbxIsFilterApplied" Name="chbxIsFilterApplied" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0"/>
+        <DatePicker Uid="dpStartDate" Name="dpStartDate" SelectedDateChanged="OnDpStartDate_SelectDateChanged" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30,10,0,0"></DatePicker>
+        <DatePicker Uid="dpEndDate" Name="dpEndDate" SelectedDateChanged="OnDpEndDate_SelectDateChanged" IsEnabled="False" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="140,10,0,0"></DatePicker>
+        <TextBox Uid="tbxChat" Name="tbxChat" Loaded="OnTbxChat_Loaded" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,45,0,0" Text="" TextWrapping="Wrap" Width="280" Height="300"/>
+        <TextBox Uid="tbxMessage" Name="tbxMessage" HorizontalAlignment="Center" TextChanged="OnTbxMessage_TextChanged" VerticalAlignment="Top" Text="" TextWrapping="Wrap" Margin="0,340,0,0" Width="280" Height="90"/>
+        <Button Uid="btnSendMessage" Name="btnSendMessage" Click="OnBtnSendMessage_Click" IsEnabled="False" Content="Отправить" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" />
     </Grid>
 </Window>
+<!--<StackPanel>
+    <TextBox x:Name="myTextBox" Height="30" />
+    <TextBlock x:Name="myTextBlock" Text="{Binding ElementName=myTextBox,Path=Text}" Height="30" />
+</StackPanel>-->
