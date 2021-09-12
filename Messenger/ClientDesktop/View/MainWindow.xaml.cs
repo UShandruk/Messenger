@@ -54,6 +54,8 @@ namespace ClientDesktop.View
             binding.ElementName = "tbxChat"; // элемент-источник
             binding.Path = new PropertyPath("TextProperty"); // свойство элемента-источника
             binding.Mode = BindingMode.OneWay; // установка режима связи (не обязательно)
+
+            //binding.Converter = new TextToBoolConverter();
             chbxIsFilterApplied.SetBinding(CheckBox.IsEnabledProperty, binding); // установка привязки для элемента-приемника
         }
 
@@ -81,7 +83,6 @@ namespace ClientDesktop.View
         private void OnTbxMessage_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnSendMessage.IsEnabled = ((TextBox)sender).Text.Length > 0;
-
         }
 
         /// <summary>
