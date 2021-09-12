@@ -114,7 +114,7 @@ namespace ClientDesktop.View
             if (chbxIsFilterApplied.IsChecked == true && dpStartDate.SelectedDate != null && dpEndDate.SelectedDate != null)
             {
                 List<Message> messageList = await dal.GetMessagesAsync(configReader.UId);
-                messageList = messageList.Where(x => x.Datetime >= startDate && x.Datetime <= endDate).ToList();
+                messageList = messageList.Where(x => x.Datetime.Date >= startDate && x.Datetime.Date <= endDate).ToList();
                 tbxChat.Text = string.Join(Environment.NewLine, messageList);
             }
         }
