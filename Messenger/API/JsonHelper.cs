@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CommonClasses
+namespace API
 {
     /// <summary>
     /// Класс для работы с JSON

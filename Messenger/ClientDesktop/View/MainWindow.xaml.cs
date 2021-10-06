@@ -32,20 +32,8 @@ namespace ClientDesktop.View
             InitializeComponent();
             DataContext = new MainViewModel();
 
-            this.Closing += new CancelEventHandler(MainWindow_Closing);
-
             //setBindingDatePickers();
             //setBindingChbxIsFilterApplied();
-        }
-
-        private void MainWindow_Closing(object sender, CancelEventArgs e)
-        {
-            int uId = configReader.UId;
-            // List<Message> messageList = this.Content.DataContext.Messages; // нет доступа
-            List<Message> messageList = ((ClientDesktop.ViewModel.MainViewModel)((System.Windows.FrameworkElement)this.Content).DataContext).Messages.ToList();
-
-            string filePath = configReader.FilePathMessages + uId.ToString() + "_messages.json";
-            JsonHelper.SaveToJSON(uId, filePath, messageList);
         }
 
         /// <summary>

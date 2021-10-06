@@ -47,9 +47,12 @@ namespace ClientDesktop.ViewModel
 
         public MainViewModel()
         {
-            string filePath = configReader.FilePathMessages + configReader.UId.ToString() + "_messages.json";
             // загрузка кеша сообщений из json
-            List<Message> messages = JsonHelper.LoadFromJSON(configReader.UId, filePath); //loadFromJSON(configReader.UId);
+            //string filePath = configReader.FilePathMessages + configReader.UId.ToString() + "_messages.json";
+            //List<Message> messages = JsonHelper.LoadFromJSON(configReader.UId, filePath); //loadFromJSON(configReader.UId);
+
+            // загрузка сообщений из API
+            List<Message> messages = DAL.GetMessagesAsync(configReader.UId).Result;
             Messages = new ObservableCollection<Message>(messages); 
         }
 
