@@ -27,6 +27,11 @@ namespace ClientDesktop
         public string UserName;
 
         /// <summary>
+        /// Путь к папке с сообщениями (без имени файла и с "\" в конце)
+        /// </summary>
+        public string FilePathMessages;
+
+        /// <summary>
         /// Конструктор
         /// </summary>
         public ConfigReader()

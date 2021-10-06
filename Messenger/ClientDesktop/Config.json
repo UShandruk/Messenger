@@ -1,6 +1,6 @@
 {
   "UserName": "User1",
   "UId": 1,
-  //"ApiUrl": "https://localhost:5001",
-  "ApiUrl": "http://localhost:5000"
+  "ApiUrl": "https://localhost:5001" // в дебаге с локального компа
+  //"ApiUrl": "http://localhost:5000"
 }
