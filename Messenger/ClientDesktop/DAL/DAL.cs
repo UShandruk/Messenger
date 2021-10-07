@@ -16,6 +16,7 @@ namespace ClientDesktop
     public class DAL
     {
         private ConfigReader configReader;
+        private HttpClient httpClient = GetHttpClient();
 
         /// <summary>
         /// Конструктор
@@ -49,7 +50,6 @@ namespace ClientDesktop
         /// <returns></returns>
         public async void SendMessageAsync(Message message)
         {
-            HttpClient httpClient = GetHttpClient();
             HttpResponseMessage response = await httpClient.PostAsJsonAsync(configReader.ApiUrl + "/Message/SendMessage", message);
             response.EnsureSuccessStatusCode();
         }
@@ -62,7 +62,6 @@ namespace ClientDesktop
         public async Task<List<Message>> GetMessagesAsync(int uId)
         {
             string url = configReader.ApiUrl + "/Message/GetMessages?uId=" + uId;
-            HttpClient httpClient = GetHttpClient();
 
             HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
             string jsonString = response.Content.ReadAsStringAsync().Result;
